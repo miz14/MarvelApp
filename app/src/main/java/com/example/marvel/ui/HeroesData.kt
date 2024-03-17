@@ -1,13 +1,13 @@
 package com.example.marvel.ui
 
-data class Hero (
+data class Hero(
     val id: Int,
     val name: String,
     val desc: String,
     val imageUrl: String,
 )
 
-val Heroes = listOf<Hero>(
+val Heroes = listOf(
     Hero(
         1,
         "Deadpool",

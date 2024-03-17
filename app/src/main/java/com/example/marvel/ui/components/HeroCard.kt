@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_EXPRESSION")
-
 package com.example.marvel.ui.components
 
 import androidx.compose.foundation.layout.Box
@@ -41,8 +39,6 @@ fun HeroCard(
             modifier = Modifier
                 .padding(30.dp)
                 .align(Alignment.BottomStart)
-
-
         ) {
             Text(
                 text = hero.name,

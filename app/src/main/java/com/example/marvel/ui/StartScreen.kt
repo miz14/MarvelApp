@@ -18,11 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.marvel.MarvelAppBackground
+import com.example.marvel.R
 import com.example.marvel.ui.components.HeroCard
 
-@OptIn(ExperimentalFoundationApi::class)
+@ExperimentalFoundationApi
 @Composable
 fun StartScreen(
     onClick: (Int) -> Unit,
@@ -37,7 +39,8 @@ fun StartScreen(
                 .padding(innerPadding)
 
         ) {
-            Text("Choose your hero",
+            Text(
+                stringResource(R.string.choose_hero),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(40.dp))
@@ -53,7 +56,7 @@ fun StartScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 flingBehavior = flingBehavior
 
-            ){
+            ) {
                 items(heroes.size) { idx ->
                     HeroCard(
                         hero = Heroes[idx],

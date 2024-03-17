@@ -32,7 +32,7 @@ fun HeroScreen(
         )
         Column(
             modifier = Modifier
-                .padding(20.dp)
+                .padding(20.dp, 40.dp)
                 .align(Alignment.BottomStart)
         ) {
             Text(

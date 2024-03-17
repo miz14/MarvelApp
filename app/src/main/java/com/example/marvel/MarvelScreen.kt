@@ -11,11 +11,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -43,14 +55,26 @@ enum class MarvelScreen() {
 
 @Composable
 fun AppNavigator(
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    navController: NavHostController,
+    canGoBack: MutableState<Boolean>
+
 ) {
-    val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = MarvelScreen.StartScreen.name,
     ) {
-        composable(route = MarvelScreen.StartScreen.name) { StartScreen(onClick = {i -> navController.navigate(MarvelScreen.HeroScreen.name + "/$i")}, innerPadding, Heroes)}
+        composable(route = MarvelScreen.StartScreen.name) {
+            StartScreen(
+                onClick = {
+                    i -> navController.navigate(MarvelScreen.HeroScreen.name + "/$i")
+                    canGoBack.value = true
+
+                },
+                innerPadding = innerPadding,
+                heroes = Heroes)
+
+        }
         composable(
             route = MarvelScreen.HeroScreen.name + "/{id}",
             arguments = listOf(
@@ -63,24 +87,25 @@ fun AppNavigator(
     }
 }
 
-
 @Composable
 fun MarvelApp(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ) {
+    val canGoBack = remember {
+        mutableStateOf(false)
+    }
         Scaffold(
             topBar = {
-                MarvelAppBar(false, {})
+                MarvelAppBar(canGoBack, {navController.navigateUp()})
             },
         ) { innerPadding ->
-//                StartScreen(innerPadding = innerPadding, navController = navController, heroes = Heroes)
-            AppNavigator(innerPadding)
+                AppNavigator(innerPadding, navController, canGoBack)
         }
 }
 
 @Composable
 fun MarvelAppBar(
-    canNavigateBack: Boolean,
+    canGoBack: MutableState<Boolean>,
     navigateUp: () -> Unit,
 ) {
     TopAppBar(
@@ -88,23 +113,32 @@ fun MarvelAppBar(
             containerColor = Color.Transparent
         ),
         title = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.marvel_logo),
-                    contentDescription = null,
-                    modifier = Modifier.height(40.dp),
-                    contentScale = ContentScale.Inside
-                )
+            if (!canGoBack.value) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.marvel_logo),
+                        contentDescription = null,
+                        modifier = Modifier.height(40.dp),
+                        contentScale = ContentScale.Inside
+                    )
+                }
             }
         },
         navigationIcon = {
-            Box(
-                modifier = Modifier.size(40.dp)
-            )
+            if (canGoBack.value) {
+                IconButton(onClick = {canGoBack.value = false
+                    navigateUp()}) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
         },
         actions = {
             Box(

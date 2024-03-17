@@ -2,17 +2,17 @@ package com.example.marvel
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -25,32 +25,56 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.marvel.ui.HeroesRow
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import com.example.marvel.ui.theme.MarvelTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.marvel.ui.HeroScreen
+import com.example.marvel.ui.Heroes
+import com.example.marvel.ui.StartScreen
+
+enum class MarvelScreen() {
+    StartScreen,
+    HeroScreen
+}
 
 @Composable
-fun MarvelApp() {
+fun AppNavigator(
+    innerPadding: PaddingValues
+) {
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = MarvelScreen.StartScreen.name,
+    ) {
+        composable(route = MarvelScreen.StartScreen.name) { StartScreen(onClick = {i -> navController.navigate(MarvelScreen.HeroScreen.name + "/$i")}, innerPadding, Heroes)}
+        composable(
+            route = MarvelScreen.HeroScreen.name + "/{id}",
+            arguments = listOf(
+                navArgument("id") {type = NavType.IntType}
+            )
+        ) { navBackStackEntry ->
+            val a = navBackStackEntry.arguments?.getInt("id")
+            HeroScreen(hero = Heroes[a!!])
+        }
+    }
+}
+
+
+@Composable
+fun MarvelApp(
+    navController: NavHostController = rememberNavController()
+) {
         Scaffold(
             topBar = {
                 MarvelAppBar(false, {})
             },
         ) { innerPadding ->
-
-            MarvelAppBackground {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxWidth()
-
-                ) {
-                    Text("Choose your hero",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(40.dp))
-                    HeroesRow()
-                }
-            }
+//                StartScreen(innerPadding = innerPadding, navController = navController, heroes = Heroes)
+            AppNavigator(innerPadding)
         }
 }
 

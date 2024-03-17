@@ -13,5 +13,4 @@ val Pink40 = Color(0xFF7D5260)
 
 val BlackBg = Color(0xff2b272b)
 val RedBg = Color(0xFF991518)
-
-val colora = Color(0xFFFF00C8)
+val White = Color.White

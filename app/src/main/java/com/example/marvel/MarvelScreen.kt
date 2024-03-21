@@ -38,53 +38,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.marvel.navigation.AppNavigator
 import com.example.marvel.ui.HeroScreen
 import com.example.marvel.ui.Heroes
 import com.example.marvel.ui.StartScreen
+import com.example.marvel.ui.components.MarvelAppBar
 
-enum class MarvelScreen {
-    StartScreen,
-    HeroScreen
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun AppNavigator(
-    innerPadding: PaddingValues,
-    navController: NavHostController,
-    canGoBack: MutableState<Boolean>
-
-) {
-    NavHost(
-        navController = navController,
-        startDestination = MarvelScreen.StartScreen.name,
-    ) {
-        composable(route = MarvelScreen.StartScreen.name) {
-            StartScreen(
-                onClick = { i ->
-                    navController.navigate(MarvelScreen.HeroScreen.name + "/$i")
-                    canGoBack.value = true
-
-                },
-                innerPadding = innerPadding,
-                heroes = Heroes
-            )
-
-        }
-        composable(
-            route = MarvelScreen.HeroScreen.name + "/{id}",
-            arguments = listOf(
-                navArgument("id") { type = NavType.IntType }
-            )
-        ) { navBackStackEntry ->
-            val a = navBackStackEntry.arguments?.getInt("id")
-            HeroScreen(hero = Heroes[a!!])
-        }
-    }
-}
 
 @Composable
-fun MarvelApp(
+fun MarvelScreen(
     navController: NavHostController = rememberNavController(),
 ) {
     val canGoBack = remember {
@@ -99,94 +61,11 @@ fun MarvelApp(
     }
 }
 
-@Composable
-fun MarvelAppBar(
-    canGoBack: MutableState<Boolean>,
-    navigateUp: () -> Unit,
-) {
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent
-        ),
-        title = {
-            if (!canGoBack.value) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.marvel_logo),
-                        contentDescription = null,
-                        modifier = Modifier.height(40.dp),
-                        contentScale = ContentScale.Inside
-                    )
-                }
-            }
-        },
-        navigationIcon = {
-            Box(
-                modifier = Modifier
-                    .size(40.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (canGoBack.value) {
-                    IconButton(onClick = {
-                        canGoBack.value = false
-                        navigateUp()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                }
-            }
-        },
-        actions = {
-            Box(
-                modifier = Modifier.size(40.dp)
-            )
-        }
-    )
-}
-
-@Composable
-fun MarvelAppBackground(
-    content: @Composable () -> Unit,
-) {
-    val color2 = MaterialTheme.colorScheme.onBackground
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-
-            .drawBehind {
-                val path = Path().apply {
-                    val x = size.width
-                    val y = size.height
-                    moveTo(x, y / 2.5f)
-                    lineTo(x, y)
-                    lineTo(0f, y)
-                    close()
-                }
-
-                drawPath(
-                    path = path,
-                    color = color2
-                )
-            }
-    ) {
-        content()
-    }
-}
-
 @Preview
 @Composable
 fun TestApp() {
     MarvelTheme {
-        MarvelApp()
+        MarvelScreen()
     }
 }
 

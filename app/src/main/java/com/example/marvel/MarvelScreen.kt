@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -52,12 +53,16 @@ fun MarvelScreen(
     val canGoBack = remember {
         mutableStateOf(false)
     }
+    val appBarNavigateBack = remember {
+        mutableStateOf({})
+    }
+
     Scaffold(
         topBar = {
-            MarvelAppBar(canGoBack) { navController.navigateUp() }
+            MarvelAppBar(canGoBack, appBarNavigateBack)
         },
     ) { innerPadding ->
-        AppNavigator(innerPadding, navController, canGoBack)
+        AppNavigator(innerPadding, navController, canGoBack, appBarNavigateBack)
     }
 }
 

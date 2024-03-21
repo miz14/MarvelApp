@@ -1,9 +1,14 @@
 package com.example.marvel.navigation
 
+import android.app.Activity
+import android.app.ActivityManager
+import android.app.ActivityOptions
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -23,7 +28,8 @@ enum class MarvelScreen {
 fun AppNavigator(
     innerPadding: PaddingValues,
     navController: NavHostController,
-    canGoBack: MutableState<Boolean>
+    canGoBack: MutableState<Boolean>,
+    appBarNavigateBack: MutableState<() -> Unit>
 
 ) {
     NavHost(
@@ -31,16 +37,24 @@ fun AppNavigator(
         startDestination = MarvelScreen.StartScreen.name,
     ) {
         composable(route = MarvelScreen.StartScreen.name) {
+
             StartScreen(
                 onClick = { i ->
-                    navController.navigate(MarvelScreen.HeroScreen.name + "/$i")
-                    canGoBack.value = true
+                    if (navController.currentBackStackEntry?.destination?.route == MarvelScreen.StartScreen.name) {
+                        navController.navigate(MarvelScreen.HeroScreen.name + "/$i")
+                        canGoBack.value = true
 
+                    }
                 },
                 innerPadding = innerPadding,
                 heroes = Heroes
             )
-
+            val activity = (LocalContext.current as? Activity)
+            BackHandler(
+                onBack = {
+                    activity?.finish()
+                }
+            )
         }
         composable(
             route = MarvelScreen.HeroScreen.name + "/{id}",
@@ -48,8 +62,22 @@ fun AppNavigator(
                 navArgument("id") { type = NavType.IntType }
             )
         ) { navBackStackEntry ->
+
             val a = navBackStackEntry.arguments?.getInt("id")
-            HeroScreen(hero = Heroes[a!!])
+            HeroScreen(
+                hero = Heroes[a!!]
+            )
+
+            appBarNavigateBack.value = {
+                navController.navigate(MarvelScreen.StartScreen.name)
+                canGoBack.value = false
+            }
+            BackHandler(
+                onBack = {
+                    navController.navigate(MarvelScreen.StartScreen.name)
+                    canGoBack.value = false
+                }
+            )
         }
     }
 }

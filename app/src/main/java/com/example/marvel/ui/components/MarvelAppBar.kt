@@ -26,7 +26,7 @@ import com.example.marvel.R
 @Composable
 fun MarvelAppBar(
     canGoBack: MutableState<Boolean>,
-    navigateUp: () -> Unit,
+    appBarNavigateBack: MutableState<() -> Unit>,
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -55,10 +55,7 @@ fun MarvelAppBar(
                 contentAlignment = Alignment.Center
             ) {
                 if (canGoBack.value) {
-                    IconButton(onClick = {
-                        canGoBack.value = false
-                        navigateUp()
-                    }) {
+                    IconButton(onClick = { appBarNavigateBack.value() }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = null,

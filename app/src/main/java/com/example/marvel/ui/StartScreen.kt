@@ -35,7 +35,7 @@ fun StartScreen(
     onClick: (Int) -> Unit,
     innerPadding: PaddingValues,
     heroes: List<Hero>,
-    responseHeroState: MarvelResponseHeroesState
+    responseHeroState: String
 ) {
     MarvelAppBackground {
         Column(
@@ -56,14 +56,14 @@ fun StartScreen(
             val snappingLayout = remember(state) { SnapLayoutInfoProvider(state) }
             val flingBehavior = rememberSnapFlingBehavior(snappingLayout)
 
-            if (responseHeroState != MarvelResponseHeroesState.Success) {
+            if (responseHeroState != MarvelResponseHeroesState.SUCCESS) {
                 Box(
                     modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (responseHeroState == MarvelResponseHeroesState.Loading) {
+                    if (responseHeroState == MarvelResponseHeroesState.LOADING) {
                         Text(
                             text = "Loading Data",
                             modifier = Modifier
@@ -80,9 +80,7 @@ fun StartScreen(
                     }
                 }
 
-            }
-
-            else {
+            } else {
 
                 LazyRow(
                     modifier = Modifier

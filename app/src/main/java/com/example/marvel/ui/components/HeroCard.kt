@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -45,7 +47,15 @@ fun HeroCard(
         ) {
             Text(
                 text = hero.name,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleLarge
+                    .merge(
+                        shadow = Shadow(
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            offset = Offset(0f, 0f),
+                            blurRadius = 5f
+
+                        )
+                    )
             )
         }
     }

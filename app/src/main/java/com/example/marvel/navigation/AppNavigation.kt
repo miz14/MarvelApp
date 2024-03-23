@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -26,10 +26,10 @@ enum class MarvelScreen {
     HeroScreen
 }
 
-sealed interface MarvelResponseHeroesState {
-    object Success : MarvelResponseHeroesState
-    object Error : MarvelResponseHeroesState
-    object Loading : MarvelResponseHeroesState
+object MarvelResponseHeroesState {
+    const val SUCCESS = "success"
+    const val ERROR = "error"
+    const val LOADING = "loading"
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -41,22 +41,23 @@ fun AppNavigator(
     appBarNavigateBack: MutableState<() -> Unit>
 
 ) {
-    val heroes = remember { mutableStateOf<List<Hero>>(emptyList()) }
-    var marvelResponseHeroesState = remember{ mutableStateOf<MarvelResponseHeroesState>(MarvelResponseHeroesState.Loading) }
+    val heroes = rememberSaveable { mutableStateOf<List<Hero>>(emptyList()) }
+    val marvelResponseHeroesState =
+        rememberSaveable { mutableStateOf<String>(MarvelResponseHeroesState.LOADING) }
     NavHost(
         navController = navController,
         startDestination = MarvelScreen.StartScreen.name,
     ) {
 
-        composable(route = MarvelScreen.StartScreen.name){
+        composable(route = MarvelScreen.StartScreen.name) {
 
             if (heroes.value.isEmpty()) {
                 LaunchedEffect(key1 = true) {
                     try {
                         heroes.value = MarvelApiService.getHeroes(5)
-                        marvelResponseHeroesState.value = MarvelResponseHeroesState.Success
+                        marvelResponseHeroesState.value = MarvelResponseHeroesState.SUCCESS
                     } catch (e: IOException) {
-                        marvelResponseHeroesState.value = MarvelResponseHeroesState.Error
+                        marvelResponseHeroesState.value = MarvelResponseHeroesState.ERROR
                     }
 
                 }
@@ -88,7 +89,7 @@ fun AppNavigator(
         ) { navBackStackEntry ->
 
             val id = navBackStackEntry.arguments?.getInt("id")
-            val hero = heroes.value.find {hero -> hero.id == id}
+            val hero = heroes.value.find { hero -> hero.id == id }
             if (hero != null) {
                 HeroScreen(
                     hero = hero

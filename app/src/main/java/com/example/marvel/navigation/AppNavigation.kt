@@ -19,10 +19,17 @@ import com.example.marvel.models.Hero
 import com.example.marvel.network.MarvelApiService
 import com.example.marvel.ui.HeroScreen
 import com.example.marvel.ui.StartScreen
+import java.io.IOException
 
 enum class MarvelScreen {
     StartScreen,
     HeroScreen
+}
+
+sealed interface MarvelResponseHeroesState {
+    object Success : MarvelResponseHeroesState
+    object Error : MarvelResponseHeroesState
+    object Loading : MarvelResponseHeroesState
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -35,14 +42,24 @@ fun AppNavigator(
 
 ) {
     val heroes = remember { mutableStateOf<List<Hero>>(emptyList()) }
+    var marvelResponseHeroesState = remember{ mutableStateOf<MarvelResponseHeroesState>(MarvelResponseHeroesState.Loading) }
     NavHost(
         navController = navController,
         startDestination = MarvelScreen.StartScreen.name,
     ) {
 
         composable(route = MarvelScreen.StartScreen.name){
-            LaunchedEffect(key1 = true) {
-                heroes.value = MarvelApiService.getHeroes(5)
+
+            if (heroes.value.isEmpty()) {
+                LaunchedEffect(key1 = true) {
+                    try {
+                        heroes.value = MarvelApiService.getHeroes(5)
+                        marvelResponseHeroesState.value = MarvelResponseHeroesState.Success
+                    } catch (e: IOException) {
+                        marvelResponseHeroesState.value = MarvelResponseHeroesState.Error
+                    }
+
+                }
             }
             StartScreen(
                 onClick = { i ->
@@ -53,7 +70,8 @@ fun AppNavigator(
                     }
                 },
                 innerPadding = innerPadding,
-                heroes = heroes.value
+                heroes = heroes.value,
+                responseHeroState = marvelResponseHeroesState.value
             )
             val activity = (LocalContext.current as? Activity)
             BackHandler(

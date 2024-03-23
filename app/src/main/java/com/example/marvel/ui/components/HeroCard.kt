@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidthIn
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,10 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.marvel.ui.Hero
+import com.example.marvel.models.Hero
 
 @Composable
 fun HeroCard(
@@ -34,7 +34,7 @@ fun HeroCard(
             .clickable { onClick() }
     ) {
         AsyncImage(
-            model = hero.imageUrl,
+            model = "${hero.image.path}.${hero.image.format}",
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -47,7 +47,15 @@ fun HeroCard(
         ) {
             Text(
                 text = hero.name,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleLarge
+                    .merge(
+                        shadow = Shadow(
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            offset = Offset(0f, 0f),
+                            blurRadius = 5f
+
+                        )
+                    )
             )
         }
     }

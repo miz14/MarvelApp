@@ -2,7 +2,6 @@ package com.example.marvel.navigation
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +31,6 @@ object MarvelResponseHeroesState {
     const val LOADING = "loading"
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppNavigator(
     innerPadding: PaddingValues,
@@ -43,7 +41,7 @@ fun AppNavigator(
 ) {
     val heroes = rememberSaveable { mutableStateOf<List<Hero>>(emptyList()) }
     val marvelResponseHeroesState =
-        rememberSaveable { mutableStateOf<String>(MarvelResponseHeroesState.LOADING) }
+        rememberSaveable { mutableStateOf(MarvelResponseHeroesState.LOADING) }
     NavHost(
         navController = navController,
         startDestination = MarvelScreen.StartScreen.name,
@@ -97,12 +95,12 @@ fun AppNavigator(
             }
 
             appBarNavigateBack.value = {
-                navController.navigate(MarvelScreen.StartScreen.name)
+                navController.navigateUp()
                 canGoBack.value = false
             }
             BackHandler(
                 onBack = {
-                    navController.navigate(MarvelScreen.StartScreen.name)
+                    navController.navigateUp()
                     canGoBack.value = false
                 }
             )

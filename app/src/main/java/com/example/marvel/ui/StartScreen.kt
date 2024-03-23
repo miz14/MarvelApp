@@ -1,8 +1,6 @@
 package com.example.marvel.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Column
@@ -12,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,11 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.marvel.R
+import com.example.marvel.models.Hero
 import com.example.marvel.ui.components.HeroCard
 import com.example.marvel.ui.components.MarvelAppBackground
 
@@ -32,7 +30,7 @@ import com.example.marvel.ui.components.MarvelAppBackground
 fun StartScreen(
     onClick: (Int) -> Unit,
     innerPadding: PaddingValues,
-    heroes: List<Hero>
+    heroes: List<Hero>,
 ) {
     MarvelAppBackground {
         Column(
@@ -42,6 +40,7 @@ fun StartScreen(
                 .padding(innerPadding)
 
         ) {
+
             Text(
                 stringResource(R.string.choose_hero),
                 style = MaterialTheme.typography.titleMedium
@@ -60,10 +59,10 @@ fun StartScreen(
                 flingBehavior = flingBehavior
 
             ) {
-                items(heroes.size) { idx ->
+                items(heroes) {hero  ->
                     HeroCard(
-                        hero = Heroes[idx],
-                        onClick = { onClick(idx) },
+                        hero = hero,
+                        onClick = { onClick(hero.id) },
                         modifier = Modifier
                             .fillParentMaxWidth()
                     )
